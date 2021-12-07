@@ -17,11 +17,11 @@ hostname:username$ cd SPBPC-M1-3Q
 ```terminal
 hostname:username$ source ./.venv/bin/activate
 
-(venv)hostname:username$
+(.venv)hostname:username$
 ```
 
 ## run sample code
 
 ```terminal
-(venv)hostname:username$ python3 assignment(n).py
+(.venv)hostname:username$ python3 assignment(n).py
 ```
