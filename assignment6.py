@@ -109,20 +109,49 @@ class EnergyEQP:
     def calc(self):
         return self.__Etotal()
 
-def main(dim, d, beta):
-    E = EnergyRNN(dim, d, beta)
-    E.calc_coefficient()
-    E.print_theta()
-    E.print_w()
+class ProbalisticModel:
+    def __init__(self, W):
+        self.W = W
+        self.X = np.zeros((4, 4))
+
+    def __sigmoid(self, index_k, index_l):
+        sig = 0
+        for i in range(self.X.shape[0]):
+            for j in range(self.X.shape[0]):
+                sig += self.W[i, j, index_k, index_l] * self.X[i, j]
+        return sig
+
+    def __update(self, index_i, index_j):
+        if self.__sigmoid(index_i, index_j) >= 0:
+            self.X[index_i, index_j] = 1
+        else:
+            self.X[index_i, index_j] = 0
+    
+    def update_model(self):
+        for i in range(self.X.shape[0]):
+            for j in range(self.X.shape[0]):
+                self.__update(i, j)
+
+    def print_x(self):
+        for i in range(self.X.shape[0]):
+            for j in range(self.X.shape[0]):
+                print("X_" + str(i) + "_" + str(j) + " = " + str(self.X[i, j]))
 
 if __name__ == "__main__":
     # (i)
     dim = 4
     d = np.random.rand(4, 4)
-    beta = 0.1
-    main(dim, d, beta)
+    beta = 0.05
+    
+    E = EnergyRNN(dim, d, beta)
+    E.calc_coefficient()
+    E.print_theta()
+    E.print_w()
 
     # (ii)
-    
+    PM = ProbalisticModel(E.W)
+    PM.update_model()
+    PM.print_x()
+
 
     # (iii)
