@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 # ベクトルに直して掛け算
 class EnergyRNN:
@@ -109,7 +110,7 @@ class EnergyEQP:
     def calc(self):
         return self.__Etotal()
 
-class ProbalisticModel:
+class DeterministicModel:
     def __init__(self, W):
         self.W = W
         self.X = np.zeros((4, 4))
@@ -137,8 +138,38 @@ class ProbalisticModel:
             for j in range(self.X.shape[0]):
                 print("X_" + str(i) + "_" + str(j) + " = " + str(self.X[i, j]))
 
+class ProbalisticModel:
+    def __init__(self, W, alpha, d, beta):
+        self.W = W
+        self.X = np.zeros((4, 4))
+        self.alpha = alpha
+        self.d = d
+        self.beta = beta
+
+    def __p_E(self, index_k, index_l):
+        A = 0.5
+        E = EnergyEQP(self.X, self.d, self.beta)
+        return A * np.exp((-1) * self.alpha * E.calc())
+
+    def __update(self, index_i, index_j):
+        bin = [0, 1]
+        prob_w = [1 - self.__p_E(index_i, index_j), self.__p_E(index_i, index_j)]
+        choice = random.choices(bin, k=1, weights=prob_w)
+        self.X[index_i, index_j] = choice[0]
+    
+    def update_model(self):
+        for i in range(self.X.shape[0]):
+            for j in range(self.X.shape[0]):
+                self.__update(i, j)
+
+    def print_x(self):
+        for i in range(self.X.shape[0]):
+            for j in range(self.X.shape[0]):
+                print("X_" + str(i) + "_" + str(j) + " = " + str(self.X[i, j]))
+
 if __name__ == "__main__":
     # (i)
+    print("(i)")
     dim = 4
     d = np.random.rand(4, 4)
     beta = 0.05
@@ -149,9 +180,14 @@ if __name__ == "__main__":
     E.print_w()
 
     # (ii)
-    PM = ProbalisticModel(E.W)
-    PM.update_model()
-    PM.print_x()
-
+    print("(ii)")
+    DM = DeterministicModel(E.W)
+    DM.update_model()
+    DM.print_x()
 
     # (iii)
+    print("(iii)")
+    alpha = 0.01
+    PM = ProbalisticModel(E.W, alpha, d, beta)
+    PM.update_model()
+    PM.print_x()
