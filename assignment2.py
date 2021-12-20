@@ -41,6 +41,15 @@ def probability(p, RAND_MAX):
     else:
         return 0
 
+def probability_choice(p):
+    """
+    compare generating the random number with p * RAND_MAX
+    if rand() <= p * RAND_MAX then returning 1, else returning 0
+    """
+
+    bin = [0 ,1]
+    return random.choices(bin, k=1, weights=[1-p, p])[0]
+
 def value_writing(index, value, np_array):
     """
     if you choose index 1 and change value from 0 to 1
